@@ -1,1 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Math Past Paper Generator</title>
+</head>
+<body>
+    <h1>Random Math Question Generator</h1>
+    <button id="generate-btn">Generate Random Question</button>
+    
+    <div id="question-box" style="margin-top: 20px; font-size: 20px;">
+        Click the button to get a question!
+    </div>
 
+    <!-- Link to the logic file -->
+    <script src="script.js"></script>
+</body>
+</html>
