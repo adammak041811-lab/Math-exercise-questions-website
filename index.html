@@ -6,7 +6,7 @@
     <title>DSE Math Factorization Drill</title>
     <style>
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
             padding: 40px 20px;
@@ -45,7 +45,7 @@
             cursor: pointer;
             border-radius: 6px;
             font-weight: bold;
-            transition: background 0.2s, opacity 0.2s;
+            transition: background 0.2s;
         }
         #generate-btn {
             background-color: #3498db;
@@ -91,7 +91,6 @@
             font-weight: bold;
             margin-bottom: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
         .ans-header {
             font-size: 14px;
@@ -120,130 +119,124 @@
     </div>
 
     <script>
-        // Database containing all 19 loaded questions & solutions formatted for HTML display
+        // Use basic keyboard characters (^ for powers) to guarantee compatibility on all devices
         const questions = [
             {
                 "topic": "Common Factors",
-                "question": "Factorize:<br>6x³y² - 9x²y³ + 3x²y²",
-                "answer": "3x²y²(2x - 3y + 1)"
+                "question": "Factorize:<br>6x^3y^2 - 9x^2y^3 + 3x^2y^2",
+                "answer": "3x^2y^2(2x - 3y + 1)"
             },
             {
                 "topic": "Grouping Terms",
-                "question": "Factorize:<br>x³ + 2x² + 3x + 6",
-                "answer": "Group: (x³ + 2x²) + (3x + 6)<br>= x²(x + 2) + 3(x + 2)<br>= <b>(x + 2)(x² + 3)</b>"
+                "question": "Factorize:<br>x^3 + 2x^2 + 3x + 6",
+                "answer": "Group: (x^3 + 2x^2) + (3x + 6)<br>= x^2(x + 2) + 3(x + 2)<br>= (x + 2)(x^2 + 3)"
             },
             {
                 "topic": "Difference of Squares",
-                "question": "Factorize:<br>4x⁴ - 25y²",
-                "answer": "<b>(2x² - 5y)(2x² + 5y)</b>"
+                "question": "Factorize:<br>4x^4 - 25y^2",
+                "answer": "(2x^2 - 5y)(2x^2 + 5y)"
             },
             {
                 "topic": "Grouping & Difference of Squares",
-                "question": "Factorize:<br>x² - 6xy + 9y² - 4z²",
-                "answer": "First three terms: (x - 3y)²<br>Then: (x - 3y)² - (2z)²<br>= <b>(x - 3y - 2z)(x - 3y + 2z)</b>"
+                "question": "Factorize:<br>x^2 - 6xy + 9y^2 - 4z^2",
+                "answer": "First three terms: (x - 3y)^2<br>Then: (x - 3y)^2 - (2z)^2<br>= (x - 3y - 2z)(x - 3y + 2z)"
             },
             {
                 "topic": "Difference of Cubes",
-                "question": "Factorize:<br>8x³ - 27y³",
-                "answer": "(2x)³ - (3y)³<br>= <b>(2x - 3y)(4x² + 6xy + 9y²)</b>"
+                "question": "Factorize:<br>8x^3 - 27y^3",
+                "answer": "(2x)^3 - (3y)^3<br>= (2x - 3y)(4x^2 + 6xy + 9y^2)"
             },
             {
                 "topic": "Substitution & Quadratic Form",
-                "question": "Factorize:<br>x⁴ - 5x² + 4",
-                "answer": "Let u = x²:<br>u² - 5u + 4 = (u - 1)(u - 4)<br>= (x² - 1)(x² - 4)<br>= <b>(x - 1)(x + 1)(x - 2)(x + 2)</b>"
+                "question": "Factorize:<br>x^4 - 5x^2 + 4",
+                "answer": "Let u = x^2:<br>u^2 - 5u + 4 = (u - 1)(u - 4)<br>= (x^2 - 1)(x^2 - 4)<br>= (x - 1)(x + 1)(x - 2)(x + 2)"
             },
             {
                 "topic": "Factor Theorem & Cubic Factoring",
-                "question": "Factorize completely:<br>2x³ - 3x² - 8x + 12",
-                "answer": "Test x = 2: 2(8) - 3(4) - 16 + 12 = 0 → factor is (x - 2)<br>Divide: 2x³ - 3x² - 8x + 12 = (x - 2)(2x² + x - 6)<br>Factor quadratic: 2x² + x - 6 = (2x - 3)(x + 2)<br>Answer: <b>(x - 2)(2x - 3)(x + 2)</b>"
+                "question": "Factorize completely:<br>2x^3 - 3x^2 - 8x + 12",
+                "answer": "Test x = 2: 2(8) - 3(4) - 16 + 12 = 0 -> factor is (x - 2)<br>Divide: (x - 2)(2x^2 + x - 6)<br>Factor quadratic: 2x^2 + x - 6 = (2x - 3)(x + 2)<br>Answer: (x - 2)(2x - 3)(x + 2)"
             },
             {
                 "topic": "Advanced Identity (Squares & Cubes)",
-                "question": "Factorize completely:<br>x⁶ - y⁶",
-                "answer": "Difference of squares first:<br>x⁶ - y⁶ = (x³ - y³)(x³ + y³)<br><br>Then sum/difference of cubes:<br>= <b>(x - y)(x² + xy + y²)(x + y)(x² - xy + y²)</b>"
+                "question": "Factorize completely:<br>x^6 - y^6",
+                "answer": "Difference of squares first:<br>x^6 - y^6 = (x^3 - y^3)(x^3 + y^3)<br>Then sum/difference of cubes:<br>= (x - y)(x^2 + xy + y^2)(x + y)(x^2 - xy + y^2)"
             },
             {
                 "topic": "Three Variables Identity",
-                "question": "Factorize completely:<br>a³ + b³ + c³ - 3abc",
-                "answer": "Using the algebraic identity:<br>= <b>(a + b + c)(a² + b² + c² - ab - bc - ca)</b>"
+                "question": "Factorize completely:<br>a^3 + b^3 + c^3 - 3abc",
+                "answer": "Using identity:<br>= (a + b + c)(a^2 + b^2 + c^2 - ab - bc - ca)"
             },
             {
                 "topic": "Factor Theorem (Quartic)",
-                "question": "Factorize completely:<br>x⁴ - 2x³ - 7x² + 8x + 12",
-                "answer": "Test x = 2: 16 - 16 - 28 + 16 + 12 = 0 → factor (x - 2)<br>Divide → (x - 2)(x³ - 7x - 6)<br>Test x = 3 on cubic: 27 - 21 - 6 = 0 → factor (x - 3)<br>Divide → (x - 2)(x - 3)(x² + 3x + 2)<br>= <b>(x - 2)(x - 3)(x + 1)(x + 2)</b>"
+                "question": "Factorize completely:<br>x^4 - 2x^3 - 7x^2 + 8x + 12",
+                "answer": "Test x = 2 -> factor (x - 2)<br>Divide -> (x - 2)(x^3 - 7x - 6)<br>Test x = 3 on cubic -> factor (x - 3)<br>Divide -> (x - 2)(x - 3)(x^2 + 3x + 2)<br>= (x - 2)(x - 3)(x + 1)(x + 2)"
             },
             {
                 "topic": "Grouping over Integers",
-                "question": "Factorize over integers:<br>x³ - 3x² - 9x + 27",
-                "answer": "Group: (x³ - 3x²) - (9x - 27)<br>= x²(x - 3) - 9(x - 3)<br>= (x - 3)(x² - 9)<br>= (x - 3)(x - 3)(x + 3)<br>= <b>(x - 3)²(x + 3)</b>"
+                "question": "Factorize over integers:<br>x^3 - 3x^2 - 9x + 27",
+                "answer": "Group: (x^3 - 3x^2) - (9x - 27)<br>= x^2(x - 3) - 9(x - 3)<br>= (x - 3)(x^2 - 9)<br>= (x - 3)(x - 3)(x + 3)<br>= (x - 3)^2(x + 3)"
             },
             {
                 "topic": "Completing the Square Strategy",
-                "question": "Factorize completely:<br>x⁴ + 4y⁴",
-                "answer": "Add & subtract 4x²y²:<br>= x⁴ + 4x²y² + 4y⁴ - 4x²y²<br>= (x² + 2y²)² - (2xy)²<br>= (x² + 2y² - 2xy)(x² + 2y² + 2xy)<br>= <b>(x² - 2xy + 2y²)(x² + 2xy + 2y²)</b>"
+                "question": "Factorize completely:<br>x^4 + 4y^4",
+                "answer": "Add & subtract 4x^2y^2:<br>= x^4 + 4x^2y^2 + 4y^4 - 4x^2y^2<br>= (x^2 + 2y^2)^2 - (2xy)^2<br>= (x^2 + 2y^2 - 2xy)(x^2 + 2y^2 + 2xy)<br>= (x^2 - 2xy + 2y^2)(x^2 + 2xy + 2y^2)"
             },
             {
                 "topic": "Quartic Symmetric Splitting",
-                "question": "Factorize:<br>x⁴ + x² + 1",
-                "answer": "Add & subtract x²:<br>= x⁴ + 2x² + 1 - x²<br>= (x² + 1)² - x²<br>= (x² + 1 - x)(x² + 1 + x)<br>= <b>(x² - x + 1)(x² + x + 1)</b>"
+                "question": "Factorize:<br>x^4 + x^2 + 1",
+                "answer": "Add & subtract x^2:<br>= x^4 + 2x^2 + 1 - x^2<br>= (x^2 + 1)^2 - x^2<br>= (x^2 + 1 - x)(x^2 + 1 + x)<br>= (x^2 - x + 1)(x^2 + x + 1)"
             },
             {
                 "topic": "Cyclic Identity",
-                "question": "Factorize:<br>a²(b - c) + b²(c - a) + c²(a - b)",
-                "answer": "Expand: a²b - a²c + b²c - b²a + c²a - c²b<br>Group factor (standard cyclic matrix property):<br>= <b>-(a - b)(b - c)(c - a)</b>  (or (a - b)(b - c)(a - c))"
+                "question": "Factorize:<br>a^2(b - c) + b^2(c - a) + c^2(a - b)",
+                "answer": "Expand: a^2b - a^2c + b^2c - b^2a + c^2a - c^2b<br>= -(a - b)(b - c)(c - a)"
             },
             {
                 "topic": "Symmetric Polynomial Identity",
-                "question": "Factorize completely:<br>x³ + y³ + z³ - 3xyz",
-                "answer": "Fully factored over integers via fundamental identity:<br>= <b>(x + y + z)(x² + y² + z² - xy - yz - zx)</b>"
+                "question": "Factorize completely:<br>x^3 + y^3 + z^3 - 3xyz",
+                "answer": "= (x + y + z)(x^2 + y^2 + z^2 - xy - yz - zx)"
             },
             {
-                "topic": "Geometric Progression / Polynomial Expansion",
-                "question": "Factorize completely:<br>x⁵ + x⁴ + x³ + x² + x + 1",
-                "answer": "Group terms by pairs:<br>= x⁴(x + 1) + x²(x + 1) + 1(x + 1)<br>= (x + 1)(x⁴ + x² + 1)<br>From identity splitting (see Q13):<br>= <b>(x + 1)(x² - x + 1)(x² + x + 1)</b>"
+                "topic": "Geometric Progression Method",
+                "question": "Factorize completely:<br>x^5 + x^4 + x^3 + x^2 + x + 1",
+                "answer": "Group pairs:<br>= x^4(x + 1) + x^2(x + 1) + 1(x + 1)<br>= (x + 1)(x^4 + x^2 + 1)<br>= (x + 1)(x^2 - x + 1)(x^2 + x + 1)"
             },
             {
                 "topic": "Reciprocal Polynomial Method",
-                "question": "Factorize:<br>x⁴ - 6x³ + 11x² - 6x + 1",
-                "answer": "Divide expression by x² framework:<br>Let u = x + (1/x), then x² + (1/x²) = u² - 2<br>Transforms equation into: u² - 6u + 9 = (u - 3)²<br>Substituting back: (x + (1/x) - 3)²<br>Multiply back x² factor structural frame:<br>= <b>(x² - 3x + 1)²</b>"
+                "question": "Factorize:<br>x^4 - 6x^3 + 11x^2 - 6x + 1",
+                "answer": "Let u = x + (1/x), then x^2 + (1/x^2) = u^2 - 2<br>Transforms into: u^2 - 6u + 9 = (u - 3)^2<br>Substituting back and multiplying x^2:<br>= (x^2 - 3x + 1)^2"
             },
             {
                 "topic": "Rational Root / Factor Theorem",
-                "question": "Factorize completely:<br>6x³ - 11x² - 19x - 6",
-                "answer": "Test x = 3: 6(27) - 11(9) - 19(3) - 6 = 162 - 99 - 57 - 6 = 0 → factor (x - 3)<br>Polynomial Division → (x - 3)(6x² + 7x + 2)<br>Factor quadratic piece: 6x² + 7x + 2 = (3x + 2)(2x + 1)<br>Answer: <b>(x - 3)(3x + 2)(2x + 1)</b>"
+                "question": "Factorize completely:<br>6x^3 - 11x^2 - 19x - 6",
+                "answer": "Test x = 3 -> factor (x - 3)<br>Division -> (x - 3)(6x^2 + 7x + 2)<br>Factor quadratic: 6x^2 + 7x + 2 = (3x + 2)(2x + 1)<br>Answer: (x - 3)(3x + 2)(2x + 1)"
             },
             {
                 "topic": "Cubic Polynomial Expansion Difference",
-                "question": "Factorize:<br>(a + b + c)³ - a³ - b³ - c³",
-                "answer": "Expanding or utilizing symmetrical multi-variable reduction yields:<br>= <b>3(a + b)(b + c)(c + a)</b>"
+                "question": "Factorize:<br>(a + b + c)^3 - a^3 - b^3 - c^3",
+                "answer": "Expanding yields:<br>= 3(a + b)(b + c)(c + a)"
             }
         ];
 
         let currentQuestion = null;
 
         document.getElementById('generate-btn').addEventListener('click', () => {
-            // Pick a random question
             const randomIndex = Math.floor(Math.random() * questions.length);
             currentQuestion = questions[randomIndex];
             
-            // Render question card
             document.getElementById('question-box').innerHTML = `
                 <div class="topic-tag">[Topic: ${currentQuestion.topic}]</div>
+                <div>${currentQuestion.question}</div>
+            `;
+            document.getElementById('question-box').style.textAlign = 'left';
 
-${currentQuestion.question}
-`;
-document.getElementById('question-box').style.textAlign = 'left';
-// Clear and hide previous answers, activate show button
-const answerBox = document.getElementById('answer-box');
-answerBox.style.display = 'none';
-answerBox.innerHTML = '';
-document.getElementById('answer-btn').disabled = false;
-});
-document.getElementById('answer-btn').addEventListener('click', () => {
-if (currentQuestion) {
-const answerBox = document.getElementById('answer-box');
-answerBox.innerHTML = <div class="ans-header">Steps / Solution:</div> <div>${currentQuestion.answer}</div>;
-answerBox.style.display = 'block';
-document.getElementById('answer-btn').disabled = true;
-}
-});
+            const answerBox = document.getElementById('answer-box');
+            answerBox.style.display = 'none';
+            answerBox.innerHTML = '';
+            document.getElementById('answer-btn').disabled = false;
+        });
+
+        document.getElementById('answer-btn').addEventListener('click', () => {
+            if (currentQuestion) {
+                const answerBox = document.getElementById('answer-box');
+                answerBox.innerHTML = `
