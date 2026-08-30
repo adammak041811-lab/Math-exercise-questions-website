@@ -3,97 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSE Past Paper Questions</title>
+    <title>DSE Math Factorization Drill</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            text-align: center; 
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
             margin: 0;
-            padding: 50px 20px;
+            padding: 40px 20px;
             background-color: #f4f7f6;
             color: #333;
         }
         .container {
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
             background: white;
             padding: 40px 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
         }
         h1 {
             font-size: 26px;
-            margin-bottom: 25px;
+            margin-bottom: 5px;
             color: #2c3e50;
         }
-        #question-box { 
-            margin: 30px auto; 
-            padding: 25px; 
-            border: 2px dashed #3498db; 
-            background-color: #fafbfc;
-            border-radius: 8px;
-            min-height: 120px; 
-            font-size: 20px; 
-            line-height: 1.6;
-            text-align: left;
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 35px;
+            font-size: 15px;
         }
-        button { 
-            padding: 14px 28px; 
-            font-size: 18px; 
-            background-color: #3498db; 
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            border-radius: 6px; 
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
             font-weight: bold;
-            transition: background 0.2s;
+            transition: background 0.2s, opacity 0.2s;
         }
-        button:hover { 
-            background-color: #2980b9; 
+        #generate-btn {
+            background-color: #3498db;
+        }
+        #generate-btn:hover {
+            background-color: #2980b9;
+        }
+        #answer-btn {
+            background-color: #2ecc71;
+        }
+        #answer-btn:hover {
+            background-color: #27ae60;
+        }
+        #answer-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .display-card {
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: left;
+            min-height: 80px;
+        }
+        #question-box {
+            border: 2px dashed #3498db;
+            background-color: #fafbfc;
+            font-size: 22px;
+            line-height: 1.6;
+            color: #2c3e50;
+        }
+        #answer-box {
+            border: 2px solid #2ecc71;
+            background-color: #f9fdfa;
+            font-size: 18px;
+            line-height: 1.6;
+            color: #27ae60;
+            display: none;
+        }
+        .topic-tag {
+            font-size: 13px;
+            color: #3498db;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .ans-header {
+            font-size: 14px;
+            color: #2ecc71;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>DSE Past Paper Questions</h1>
-        <button id="generate-btn">Next Question</button>
+        <h1>DSE Mathematics</h1>
+        <div class="subtitle">Section A / Polynomial Factorization Drill</div>
         
-        <div id="question-box" style="text-align: center; color: #7f8c8d;">
-            Click the button above to generate a random DSE question.
+        <div class="button-group">
+            <button id="generate-btn">Next Question</button>
+            <button id="answer-btn" disabled>Show Answer</button>
         </div>
+
+        <div id="question-box" class="display-card" style="text-align: center; color: #7f8c8d;">
+            Click "Next Question" to begin practicing.
+        </div>
+
+        <div id="answer-box" class="display-card"></div>
     </div>
 
     <script>
-        document.getElementById('generate-btn').addEventListener('click', () => {
-            fetch('questions.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Database file not found');
-                    }
-                    return response.json();
-                })
-                .then(questions => {
-                    const randomIndex = Math.floor(Math.random() * questions.length);
-                    const randomQuestion = questions[randomIndex];
+        // Database containing all 19 loaded questions & solutions formatted for HTML display
+        const questions = [
+            {
+                "topic": "Common Factors",
+                "question": "Factorize:<br>6x³y² - 9x²y³ + 3x²y²",
+                "answer": "3x²y²(2x - 3y + 1)"
+            },
+            {
+                "topic": "Grouping Terms",
+                "question": "Factorize:<br>x³ + 2x² + 3x + 6",
+                "answer": "Group: (x³ + 2x²) + (3x + 6)<br>= x²(x + 2) + 3(x + 2)<br>= <b>(x + 2)(x² + 3)</b>"
+            },
+            {
+                "topic": "Difference of Squares",
+                "question": "Factorize:<br>4x⁴ - 25y²",
+                "answer": "<b>(2x² - 5y)(2x² + 5y)</b>"
+            },
+            {
+                "topic": "Grouping & Difference of Squares",
+                "question": "Factorize:<br>x² - 6xy + 9y² - 4z²",
+                "answer": "First three terms: (x - 3y)²<br>Then: (x - 3y)² - (2z)²<br>= <b>(x - 3y - 2z)(x - 3y + 2z)</b>"
+            },
+            {
+                "topic": "Difference of Cubes",
+                "question": "Factorize:<br>8x³ - 27y³",
+                "answer": "(2x)³ - (3y)³<br>= <b>(2x - 3y)(4x² + 6xy + 9y²)</b>"
+            },
+            {
+                "topic": "Substitution & Quadratic Form",
+                "question": "Factorize:<br>x⁴ - 5x² + 4",
+                "answer": "Let u = x²:<br>u² - 5u + 4 = (u - 1)(u - 4)<br>= (x² - 1)(x² - 4)<br>= <b>(x - 1)(x + 1)(x - 2)(x + 2)</b>"
+            },
+            {
+                "topic": "Factor Theorem & Cubic Factoring",
+                "question": "Factorize completely:<br>2x³ - 3x² - 8x + 12",
+                "answer": "Test x = 2: 2(8) - 3(4) - 16 + 12 = 0 → factor is (x - 2)<br>Divide: 2x³ - 3x² - 8x + 12 = (x - 2)(2x² + x - 6)<br>Factor quadratic: 2x² + x - 6 = (2x - 3)(x + 2)<br>Answer: <b>(x - 2)(2x - 3)(x + 2)</b>"
+            },
+            {
+                "topic": "Advanced Identity (Squares & Cubes)",
+                "question": "Factorize completely:<br>x⁶ - y⁶",
+                "answer": "Difference of squares first:<br>x⁶ - y⁶ = (x³ - y³)(x³ + y³)<br><br>Then sum/difference of cubes:<br>= <b>(x - y)(x² + xy + y²)(x + y)(x² - xy + y²)</b>"
+            },
+            {
+                "topic": "Three Variables Identity",
+                "question": "Factorize completely:<br>a³ + b³ + c³ - 3abc",
+                "answer": "Using the algebraic identity:<br>= <b>(a + b + c)(a² + b² + c² - ab - bc - ca)</b>"
+            },
+            {
+                "topic": "Factor Theorem (Quartic)",
+                "question": "Factorize completely:<br>x⁴ - 2x³ - 7x² + 8x + 12",
+                "answer": "Test x = 2: 16 - 16 - 28 + 16 + 12 = 0 → factor (x - 2)<br>Divide → (x - 2)(x³ - 7x - 6)<br>Test x = 3 on cubic: 27 - 21 - 6 = 0 → factor (x - 3)<br>Divide → (x - 2)(x - 3)(x² + 3x + 2)<br>= <b>(x - 2)(x - 3)(x + 1)(x + 2)</b>"
+            },
+            {
+                "topic": "Grouping over Integers",
+                "question": "Factorize over integers:<br>x³ - 3x² - 9x + 27",
+                "answer": "Group: (x³ - 3x²) - (9x - 27)<br>= x²(x - 3) - 9(x - 3)<br>= (x - 3)(x² - 9)<br>= (x - 3)(x - 3)(x + 3)<br>= <b>(x - 3)²(x + 3)</b>"
+            },
+            {
+                "topic": "Completing the Square Strategy",
+                "question": "Factorize completely:<br>x⁴ + 4y⁴",
+                "answer": "Add & subtract 4x²y²:<br>= x⁴ + 4x²y² + 4y⁴ - 4x²y²<br>= (x² + 2y²)² - (2xy)²<br>= (x² + 2y² - 2xy)(x² + 2y² + 2xy)<br>= <b>(x² - 2xy + 2y²)(x² + 2xy + 2y²)</b>"
+            },
+            {
+                "topic": "Quartic Symmetric Splitting",
+                "question": "Factorize:<br>x⁴ + x² + 1",
+                "answer": "Add & subtract x²:<br>= x⁴ + 2x² + 1 - x²<br>= (x² + 1)² - x²<br>= (x² + 1 - x)(x² + 1 + x)<br>= <b>(x² - x + 1)(x² + x + 1)</b>"
+            },
+            {
+                "topic": "Cyclic Identity",
+                "question": "Factorize:<br>a²(b - c) + b²(c - a) + c²(a - b)",
+                "answer": "Expand: a²b - a²c + b²c - b²a + c²a - c²b<br>Group factor (standard cyclic matrix property):<br>= <b>-(a - b)(b - c)(c - a)</b>  (or (a - b)(b - c)(a - c))"
+            },
+            {
+                "topic": "Symmetric Polynomial Identity",
+                "question": "Factorize completely:<br>x³ + y³ + z³ - 3xyz",
+                "answer": "Fully factored over integers via fundamental identity:<br>= <b>(x + y + z)(x² + y² + z² - xy - yz - zx)</b>"
+            },
+            {
+                "topic": "Geometric Progression / Polynomial Expansion",
+                "question": "Factorize completely:<br>x⁵ + x⁴ + x³ + x² + x + 1",
+                "answer": "Group terms by pairs:<br>= x⁴(x + 1) + x²(x + 1) + 1(x + 1)<br>= (x + 1)(x⁴ + x² + 1)<br>From identity splitting (see Q13):<br>= <b>(x + 1)(x² - x + 1)(x² + x + 1)</b>"
+            },
+            {
+                "topic": "Reciprocal Polynomial Method",
+                "question": "Factorize:<br>x⁴ - 6x³ + 11x² - 6x + 1",
+                "answer": "Divide expression by x² framework:<br>Let u = x + (1/x), then x² + (1/x²) = u² - 2<br>Transforms equation into: u² - 6u + 9 = (u - 3)²<br>Substituting back: (x + (1/x) - 3)²<br>Multiply back x² factor structural frame:<br>= <b>(x² - 3x + 1)²</b>"
+            },
+            {
+                "topic": "Rational Root / Factor Theorem",
+                "question": "Factorize completely:<br>6x³ - 11x² - 19x - 6",
+                "answer": "Test x = 3: 6(27) - 11(9) - 19(3) - 6 = 162 - 99 - 57 - 6 = 0 → factor (x - 3)<br>Polynomial Division → (x - 3)(6x² + 7x + 2)<br>Factor quadratic piece: 6x² + 7x + 2 = (3x + 2)(2x + 1)<br>Answer: <b>(x - 3)(3x + 2)(2x + 1)</b>"
+            },
+            {
+                "topic": "Cubic Polynomial Expansion Difference",
+                "question": "Factorize:<br>(a + b + c)³ - a³ - b³ - c³",
+                "answer": "Expanding or utilizing symmetrical multi-variable reduction yields:<br>= <b>3(a + b)(b + c)(c + a)</b>"
+            }
+        ];
 
-                    document.getElementById('question-box').innerHTML = `
-                        <div style="font-size: 14px; color: #3498db; font-weight: bold; margin-bottom: 10px; text-align: left;">
-                            [Topic: ${randomQuestion.topic}]
-                        </div>
-                        <div style="font-size: 20px; color: #2c3e50; text-align: left;">
-                            ${randomQuestion.question}
-                        </div>
-                    `;
-                })
-                .catch(error => {
-                    document.getElementById('question-box').innerHTML = `
-                        <p style="color: #e74c3c; font-weight: bold;">Failed to load questions</p>
-                        <p style="font-size: 14px; color: #7f8c8d;">Please check your questions.json file.</p>
-                    `;
-                    console.error(error);
-                });
-        });
-    </script>
-</body>
-</html>
+        let currentQuestion = null;
+
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            // Pick a random question
+            const randomIndex = Math.floor(Math.random() * questions.length);
+            currentQuestion = questions[randomIndex];
+            
+            // Render question card
+            document.getElementById('question-box').innerHTML = `
+                <div class="topic-tag">[Topic: ${currentQuestion.topic}]</div>
+
+${currentQuestion.question}
+`;
+document.getElementById('question-box').style.textAlign = 'left';
+// Clear and hide previous answers, activate show button
+const answerBox = document.getElementById('answer-box');
+answerBox.style.display = 'none';
+answerBox.innerHTML = '';
+document.getElementById('answer-btn').disabled = false;
+});
+document.getElementById('answer-btn').addEventListener('click', () => {
+if (currentQuestion) {
+const answerBox = document.getElementById('answer-box');
+answerBox.innerHTML = <div class="ans-header">Steps / Solution:</div> <div>${currentQuestion.answer}</div>;
+answerBox.style.display = 'block';
+document.getElementById('answer-btn').disabled = true;
+}
+});
