@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DSE Math Quiz (5 Questions)</title>
+    <title>DSE Math Quiz (18 Questions)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,6 +45,13 @@
             text-transform: uppercase;
             margin-bottom: 5px;
         }
+        .progress-text {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: right;
+        }
         .input-section {
             margin: 25px 0;
             text-align: left;
@@ -85,15 +92,38 @@
             transition: background 0.2s;
         }
         #submit-btn { background-color: #2ecc71; }
-        #submit-btn:hover { background-color: #27ae60; }
+        #submit-btn:hover:not(:disabled) { background-color: #27ae60; }
         #next-btn { background-color: #3498db; }
-        #next-btn:hover { background-color: #2980b9; }
-        
+        #next-btn:hover:not(:disabled) { background-color: #2980b9; }
+        button:disabled {
+            background-color: #bdc3c7 !important;
+            cursor: not-allowed;
+        }
+
+        .mc-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mc-btn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            border: 2px solid #bdc3c7;
+            text-align: left;
+            padding: 12px;
+            font-weight: normal;
+        }
+        .mc-btn:hover:not(:disabled) {
+            background-color: #e2e7e9;
+            border-color: #3498db;
+        }
+
         #result-box {
             margin-top: 20px;
             padding: 15px;
             border-radius: 6px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             display: none;
             text-align: left;
@@ -107,103 +137,328 @@
             color: #555;
             line-height: 1.4;
         }
+
+        /* Report View Styling */
+        #report-section {
+            display: none;
+            text-align: left;
+        }
+        .score-summary {
+            background-color: #eaf2f8;
+            border-left: 6px solid #3498db;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .score-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .score-sub {
+            font-size: 16px;
+            color: #555;
+            margin-top: 5px;
+        }
+        .report-list {
+            margin-top: 15px;
+        }
+        .report-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+        #restart-btn {
+            background-color: #e67e22;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #restart-btn:hover { background-color: #d35400; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>DSE Mathematics Quiz</h1>
-    
-    <div id="question-box" class="card">
-        <div class="topic-tag">Get Started</div>
-        <div>Click "Next Question" to load your first problem!</div>
-    </div>
+    <h1>Form 3 Mathematics Quiz</h1>
 
-    <div class="input-section">
-        <label for="user-answer">Type your final answer here (Do not use spaces):</label>
-        <input type="text" id="user-answer" placeholder="e.g., (x-2)(x+3)" disabled>
-        
+    <div id="quiz-section">
+        <div class="progress-text" id="progress-indicator">Question 0 / 18</div>
+
+        <div id="question-box" class="card">
+            <div class="topic-tag">Get Started</div>
+            <div>Click "Start Quiz" to begin!</div>
+        </div>
+
+        <!-- Multiple Choice Options -->
+        <div id="mc-section" class="input-section" style="display: none;">
+            <label>Select the correct option:</label>
+            <div class="mc-container">
+                <button class="mc-btn" id="mc-A" onclick="checkMC('A')"></button>
+                <button class="mc-btn" id="mc-B" onclick="checkMC('B')"></button>
+                <button class="mc-btn" id="mc-C" onclick="checkMC('C')"></button>
+                <button class="mc-btn" id="mc-D" onclick="checkMC('D')"></button>
+            </div>
+        </div>
+
+        <!-- Short Answer Input -->
+        <div id="sa-section" class="input-section">
+            <label for="user-answer">Type your final answer here (Do not use spaces):</label>
+            <input type="text" id="user-answer" placeholder="e.g., (x-2)(x+3)" disabled>
+        </div>
+
         <div class="btn-group">
             <button id="submit-btn" disabled>Check Answer</button>
-            <button id="next-btn">Next Question</button>
+            <button id="next-btn">Start Quiz</button>
         </div>
+
+        <div id="result-box"></div>
     </div>
 
-    <div id="result-box"></div>
+    <!-- Final Summary Report -->
+    <div id="report-section">
+        <div class="score-summary">
+            <div class="score-title" id="final-percentage">0%</div>
+            <div class="score-sub" id="final-score-text">You got 0 out of 18 correct!</div>
+        </div>
+        <h3>Topic Breakdown:</h3>
+        <div id="report-details" class="report-list"></div>
+        <button id="restart-btn" onclick="restartQuiz()">Restart Quiz</button>
+    </div>
 </div>
 
 <script>
-    // 5 clean math questions with emoji-free text
     const questions = [
-        { "topic": "Common Factors", "question": "Factorize: 6x^3y^2 - 9x^2y^3 + 3x^2y^2", "accepted": ["3x^2y^2(2x-3y+1)", "3y^2x^2(2x-3y+1)"], "solution": "3x^2y^2(2x - 3y + 1)" },
-        { "topic": "Grouping Terms", "question": "Factorize: x^3 + 2x^2 + 3x + 6", "accepted": ["(x+2)(x^2+3)", "(x^2+3)(x+2)"], "solution": "(x + 2)(x^2 + 3)" },
-        { "topic": "Difference of Squares", "question": "Factorize: 4x^4 - 25y^2", "accepted": ["(2x^2-5y)(2x^2+5y)", "(2x^2+5y)(2x^2-5y)"], "solution": "(2x^2 - 5y)(2x^2 + 5y)" },
-        { "topic": "Difference of Cubes", "question": "Factorize: 8x^3 - 27y^3", "accepted": ["(2x-3y)(4x^2+6xy+9y^2)"], "solution": "(2x - 3y)(4x^2 + 6xy + 9y^2)" },
-        { "topic": "Grouping over Integers", "question": "Factorize over integers: x^3 - 3x^2 - 9x + 27", "accepted": ["(x-3)^2(x+3)", "(x-3)(x-3)(x+3)", "(x+3)(x-3)^2"], "solution": "(x - 3)^2(x + 3)" }
+        // 10 Short Answer Questions
+        { "type": "SA", "topic": "Common Factors", "question": "Factorize: 6x^3y^2 - 9x^2y^3 + 3x^2y^2", "accepted": ["3x^2y^2(2x-3y+1)", "3y^2x^2(2x-3y+1)"], "solution": "3x^2y^2(2x - 3y + 1)" },
+        { "type": "SA", "topic": "Grouping Terms", "question": "Factorize: x^3 + 2x^2 + 3x + 6", "accepted": ["(x+2)(x^2+3)", "(x^2+3)(x+2)"], "solution": "(x + 2)(x^2 + 3)" },
+        { "type": "SA", "topic": "Difference of Squares", "question": "Factorize: 4x^4 - 25y^2", "accepted": ["(2x^2-5y)(2x^2+5y)", "(2x^2+5y)(2x^2-5y)"], "solution": "(2x^2 - 5y)(2x^2 + 5y)" },
+        { "type": "SA", "topic": "Grouping & Difference of Squares", "question": "Factorize: x^2 - 6xy + 9y^2 - 4z^2", "accepted": ["(x-3y-2z)(x-3y+2z)", "(x-3y+2z)(x-3y-2z)"], "solution": "(x - 3y - 2z)(x - 3y + 2z)" },
+        { "type": "SA", "topic": "Difference of Cubes", "question": "Factorize: 8x^3 - 27y^3", "accepted": ["(2x-3y)(4x^2+6xy+9y^2)"], "solution": "(2x - 3y)(4x^2 + 6xy + 9y^2)" },
+        { "type": "SA", "topic": "Substitution & Quadratic Form", "question": "Factorize: x^4 - 5x^2 + 4", "accepted": ["(x-1)(x+1)(x-2)(x+2)"], "solution": "(x - 1)(x + 1)(x - 2)(x + 2)" },
+        { "type": "SA", "topic": "Grouping over Integers", "question": "Factorize over integers: x^3 - 3x^2 - 9x + 27", "accepted": ["(x-3)^2(x+3)", "(x-3)(x-3)(x+3)", "(x+3)(x-3)^2"], "solution": "(x - 3)^2(x + 3)" },
+        { "type": "SA", "topic": "Completing the Square Strategy", "question": "Factorize completely: x^4 + 4y^4", "accepted": ["(x^2-2xy+2y^2)(x^2+2xy+2y^2)", "(x^2+2xy+2y^2)(x^2-2xy+2y^2)"], "solution": "(x^2 - 2xy + 2y^2)(x^2 + 2xy + 2y^2)" },
+        { "type": "SA", "topic": "Quartic Symmetric Splitting", "question": "Factorize: x^4 + x^2 + 1", "accepted": ["(x^2-x+1)(x^2+x+1)", "(x^2+x+1)(x^2-x+1)"], "solution": "(x^2 - x + 1)(x^2 + x + 1)" },
+        { "type": "SA", "topic": "Rational Root / Factor Theorem", "question": "Factorize completely: 6x^3 - 11x^2 - 19x - 6", "accepted": ["(x-3)(3x+2)(2x+1)"], "solution": "(x - 3)(3x + 2)(2x + 1)" },
+
+        // 5 Multiple Choice Questions
+        {
+            "type": "MC", "topic": "Factor Theorem",
+            "question": "If f(x) = 2x^3 - kx^2 + 3x - 6 is divisible by (x - 2), find the value of k.",
+            "options": { "A": "k = 1", "B": "k = 2", "C": "k = 3", "D": "k = 4" }, "answer": "B",
+            "solution": "By Factor Theorem, f(2) = 0. So, 2(2)^3 - k(2)^2 + 3(2) - 6 = 0 -> 16 - 4k + 6 - 6 = 0 -> 4k = 16 -> k = 2."
+        },
+        {
+            "type": "MC", "topic": "Remainder Theorem",
+            "question": "Find the remainder when x^3 - 2x^2 + 4x - 5 is divided by (x - 1).",
+            "options": { "A": "-2", "B": "-1", "C": "0", "D": "2" }, "answer": "A",
+            "solution": "By Remainder Theorem, substitute x = 1 into the polynomial: (1)^3 - 2(1)^2 + 4(1) - 5 = 1 - 2 + 4 - 5 = -2."
+        },
+        {
+            "type": "MC", "topic": "Difference of Squares",
+            "question": "Factorize completely: 9 - (x - 2)^2",
+            "options": { "A": "(x+1)(5-x)", "B": "(x-1)(5-x)", "C": "(1+x)(x-5)", "D": "(x-1)(x-5)" }, "answer": "A",
+            "solution": "Using a^2 - b^2 = (a-b)(a+b): [3 - (x-2)][3 + (x-2)] = (3 - x + 2)(3 + x - 2) = (5 - x)(1 + x)."
+        },
+        {
+            "type": "MC", "topic": "Perfect Squares",
+            "question": "Which of the following is a perfect square expression?",
+            "options": { "A": "x^2 + 4x + 2", "B": "4x^2 - 12x + 9", "C": "x^2 - 6x - 9", "D": "9x^2 + 6x + 4" }, "answer": "B",
+            "solution": "4x^2 - 12x + 9 can be written as (2x)^2 - 2(2x)(3) + (3)^2, which equals the perfect square (2x - 3)^2."
+        },
+        {
+            "type": "MC", "topic": "Sum of Cubes",
+            "question": "Factorize completely: 27x^3 + 1",
+            "options": {
+                "A": "(3x+1)(3x^2-3x+1)",
+                "B": "(3x+1)(9x^2+3x+1)",
+                "C": "(3x+1)(9x^2-3x+1)",
+                "D": "(3x-1)(9x^2+3x+1)"
+            }, "answer": "C",
+            "solution": "Using a^3 + b^3 = (a+b)(a^2 - ab + b^2): (3x)^3 + (1)^3 = (3x + 1)((3x)^2 - (3x)(1) + 1^2) = (3x + 1)(9x^2 - 3x + 1)."
+        },
+
+        // 3 NEW Form 3 Questions (No Charts/Pictures)
+        {
+            "type": "MC", "topic": "Linear Inequalities",
+            "question": "Solve the inequality: 3 - 2x > 9.",
+            "options": { "A": "x > -3", "B": "x < -3", "C": "x > 3", "D": "x < 3" }, "answer": "B",
+            "solution": "3 - 2x > 9 -> -2x > 6. Dividing by -2 reverses the inequality sign, giving x < -3."
+        },
+        {
+            "type": "MC", "topic": "Laws of Indices",
+            "question": "Simplify (2a^3b^-2)^3 and express your answer with positive indices.",
+            "options": { "A": "8a^9 / b^6", "B": "6a^9 / b^6", "C": "8a^6 / b^5", "D": "2a^9 / b^6" }, "answer": "A",
+            "solution": "(2a^3b^-2)^3 = 2^3 * (a^3)^3 * (b^-2)^3 = 8 * a^9 * b^-6 = 8a^9 / b^6."
+        },
+        {
+            "type": "SA", "topic": "Trigonometry Ratios",
+            "question": "In a right-angled triangle, if sin θ = 3/5, find the exact value of tan θ (where θ is acute).",
+            "accepted": ["3/4", "0.75"], "solution": "Since sin θ = opposite/hypotenuse = 3/5, adjacent = sqrt(5^2 - 3^2) = 4. Thus, tan θ = opposite/adjacent = 3/4."
+        }
     ];
 
-    let currentItem = null;
+    let currentQuestionIndex = -1;
+    let userAnswers = [];
+    let isSubmitted = false;
 
     const questionBox = document.getElementById('question-box');
     const answerInput = document.getElementById('user-answer');
     const submitBtn = document.getElementById('submit-btn');
     const nextBtn = document.getElementById('next-btn');
     const resultBox = document.getElementById('result-box');
+    const mcSection = document.getElementById('mc-section');
+    const saSection = document.getElementById('sa-section');
+    const progressIndicator = document.getElementById('progress-indicator');
+    const quizSection = document.getElementById('quiz-section');
+    const reportSection = document.getElementById('report-section');
 
-    nextBtn.addEventListener('click', () => {
-        const randomIndex = Math.floor(Math.random() * questions.length);
-        currentItem = questions[randomIndex];
+    nextBtn.addEventListener('click', loadNextQuestion);
+    submitBtn.addEventListener('click', checkSA);
 
-        questionBox.innerHTML = `
-            <div class="topic-tag">[Topic: ${currentItem.topic}]</div>
-            <div style="font-weight: bold; margin-top: 5px;">${currentItem.question}</div>
-        `;
-        
-        answerInput.value = '';
-        answerInput.disabled = false;
-        submitBtn.disabled = false;
-        
-        resultBox.style.display = 'none';
-        resultBox.className = '';
-        resultBox.innerHTML = '';
-        answerInput.focus();
-    });
+    function loadNextQuestion() {
+        currentQuestionIndex++;
 
-    submitBtn.addEventListener('click', () => {
-        if (!currentItem) return;
-
-        const userClean = answerInput.value.replace(/\s+/g, '').toLowerCase();
-        let isCorrect = false;
-        
-        for (let i = 0; i < currentItem.accepted.length; i++) {
-            const systemClean = currentItem.accepted[i].replace(/\s+/g, '').toLowerCase();
-            if (userClean === systemClean) {
-                isCorrect = true;
-                break;
-            }
+        if (currentQuestionIndex >= questions.length) {
+            showReport();
+            return;
         }
 
+        isSubmitted = false;
+        const q = questions[currentQuestionIndex];
+        
+        progressIndicator.innerText = `Question ${currentQuestionIndex + 1} / ${questions.length}`;
+        nextBtn.innerText = (currentQuestionIndex === questions.length - 1) ? "Finish Quiz" : "Next Question";
+        nextBtn.disabled = true;
+
+        resultBox.style.display = 'none';
+        questionBox.innerHTML = `
+            <div class="topic-tag">[Topic: ${q.topic}]</div>
+            <div>${q.question}</div>
+        `;
+
+        if (q.type === 'MC') {
+            saSection.style.display = 'none';
+            mcSection.style.display = 'block';
+            submitBtn.style.display = 'none';
+
+            for (let opt in q.options) {
+                const btn = document.getElementById(`mc-${opt}`);
+                btn.innerText = `${opt}. ${q.options[opt]}`;
+                btn.disabled = false;
+            }
+        } else {
+            mcSection.style.display = 'none';
+            saSection.style.display = 'block';
+            submitBtn.style.display = 'block';
+            
+            answerInput.value = '';
+            answerInput.disabled = false;
+            submitBtn.disabled = false;
+        }
+    }
+
+    function checkMC(selected) {
+        if (isSubmitted) return;
+        isSubmitted = true;
+
+        const q = questions[currentQuestionIndex];
+        const isCorrect = (selected === q.answer);
+
+        userAnswers.push({
+            topic: q.topic,
+            isCorrect: isCorrect
+        });
+
+        // Disable all MC buttons
+        ['A', 'B', 'C', 'D'].forEach(opt => {
+            document.getElementById(`mc-${opt}`).disabled = true;
+        });
+
+        displayResult(isCorrect, q.solution);
+        nextBtn.disabled = false;
+    }
+
+    function checkSA() {
+        if (isSubmitted) return;
+        
+        const userAns = answerInput.value.replace(/\s+/g, '');
+        if (!userAns) return;
+
+        isSubmitted = true;
+        const q = questions[currentQuestionIndex];
+        const isCorrect = q.accepted.includes(userAns);
+
+        userAnswers.push({
+            topic: q.topic,
+            isCorrect: isCorrect
+        });
+
+        answerInput.disabled = true;
+        submitBtn.disabled = true;
+
+        displayResult(isCorrect, q.solution);
+        nextBtn.disabled = false;
+    }
+
+    function displayResult(isCorrect, solutionText) {
         resultBox.style.display = 'block';
         if (isCorrect) {
             resultBox.className = 'correct';
-            resultBox.innerHTML = '[CORRECT] Excellent work.';
+            resultBox.innerHTML = `<div>Correct!</div><div class="hint"><strong>Solution:</strong> ${solutionText}</div>`;
         } else {
             resultBox.className = 'incorrect';
-            resultBox.innerHTML = `
-                [INCORRECT] Please try again.
-                <div class="hint">
-                    <b>Expected Form:</b> ${currentItem.solution}<br>
-                    <i>Note: Do not type any spaces! Use ^ for powers.</i>
-                </div>
-            `;
+            resultBox.innerHTML = `<div>Incorrect!</div><div class="hint"><strong>Solution:</strong> ${solutionText}</div>`;
         }
-    });
+    }
 
-    answerInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !submitBtn.disabled) {
-            submitBtn.click();
-        }
-    });
+    function showReport() {
+        quizSection.style.display = 'none';
+        reportSection.style.display = 'block';
+
+        const totalQuestions = questions.length;
+        const correctCount = userAnswers.filter(a => a.isCorrect).length;
+        const percentage = Math.round((correctCount / totalQuestions) * 100);
+
+        document.getElementById('final-percentage').innerText = `${percentage}%`;
+        document.getElementById('final-score-text').innerText = `You answered ${correctCount} out of ${totalQuestions} questions correctly.`;
+
+        const reportDetails = document.getElementById('report-details');
+        reportDetails.innerHTML = '';
+
+        userAnswers.forEach((ans, index) => {
+            const item = document.createElement('div');
+            item.className = 'report-item';
+            item.innerHTML = `
+                <span><strong>Q${index + 1}:</strong> ${ans.topic}</span>
+                <span style="color: ${ans.isCorrect ? '#27ae60' : '#c0392b'}; font-weight: bold;">
+                    ${ans.isCorrect ? 'Correct' : 'Incorrect'}
+                </span>
+            `;
+            reportDetails.appendChild(item);
+        });
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = -1;
+        userAnswers = [];
+        reportSection.style.display = 'none';
+        quizSection.style.display = 'block';
+        
+        questionBox.innerHTML = `
+            <div class="topic-tag">Get Started</div>
+            <div>Click "Start Quiz" to begin!</div>
+        `;
+        nextBtn.innerText = "Start Quiz";
+        nextBtn.disabled = false;
+        progressIndicator.innerText = `Question 0 / ${questions.length}`;
+        saSection.style.display = 'block';
+        mcSection.style.display = 'none';
+        submitBtn.style.display = 'block';
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+    }
 </script>
 
 </body>
